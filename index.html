@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberPulse AI - Autonomous Cybersecurity Platform</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-cyan);
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #ffffff;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 20px 0 40px 0;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #ffffff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Scan Form Card */
+        .scan-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            max-width: 600px;
+            margin: 30px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        #status-msg {
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">🛡️ CyberPulse AI</div>
+            <a href="#scan-form" class="cta-btn">Start Scan</a>
+        </header>
+
+        <section class="hero">
+            <h1>Autonomous AI Security Recon & Remediation</h1>
+            <p>የድርጅትዎን ወይም የኔትወርክዎን የደህንነት ስጋቶች በ AI እና አውቶሜሽን አውቀው ይከላከሉ::</p>
+            
+            <!-- Scan Request Form -->
+            <div class="scan-card" id="scan-form">
+                <h3 style="margin-top: 0; color: var(--accent-cyan);">Request AI Security Audit</h3>
+                <form id="auditForm">
+                    <div class="form-group">
+                        <label>Email Address (ሪፖርቱ የሚላክበት ኢሜይል)</label>
+                        <input type="email" id="email" placeholder="official@defense.gov.et" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Target IP / Domain (የሚፈተሸው IP)</label>
+                        <input type="text" id="target" placeholder="10.0.1.50 or example.com" required>
+                    </div>
+                    <button type="submit" class="cta-btn" style="width: 100%;">Run Autonomous AI Scan</button>
+                </form>
+                <div id="status-msg"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('auditForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const target = document.getElementById('target').value;
+            const statusMsg = document.getElementById('status-msg');
+
+            statusMsg.innerText = "⏳ Scanning target & generating AI analysis... Please wait.";
+
+            try {
+                const response = await fetch('/api/scan-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, target: target })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    statusMsg.innerHTML = `✅ ${data.message} <br><a href="${data.report_url}" target="_blank" style="color:#06b6d4;">[ View Executive Report ]</a>`;
+                } else {
+                    statusMsg.innerText = "❌ Error executing scan: " + data.detail;
+                }
+            } catch (err) {
+                statusMsg.innerText = "❌ Server error occurred.";
+            }
+        });
+    </script>
+</body>
+</html>
