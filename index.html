@@ -92,7 +92,6 @@
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('btnText');
         const btnSpinner = document.getElementById('btnSpinner');
-        const resultDiv = document.getElementById('result');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -100,45 +99,27 @@
             const email = document.getElementById('email').value.trim();
             const target = document.getElementById('target').value.trim();
 
-            // UI Loading state
             submitBtn.disabled = true;
-            btnText.textContent = "Scanning...";
+            btnText.textContent = "Redirecting to Payment...";
             btnSpinner.classList.remove('hidden');
-            resultDiv.classList.add('hidden');
-            resultDiv.className = "mt-6 text-center text-sm p-4 rounded-lg";
 
             try {
-                // Backend API Call (/scan endpoint)
                 const response = await fetch('/scan', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, target })
                 });
 
                 const data = await response.json();
 
-                if (response.ok) {
-                    resultDiv.classList.remove('hidden');
-                    resultDiv.classList.add('bg-slate-900/90', 'border', 'border-cyan-500/50', 'text-gray-200');
-                    
-                    // Corrected URL redirection for audit report
-                    resultDiv.innerHTML = `
-                        <p class="mb-2"><span class="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>Scan initiated successfully for target: <strong class="text-white">${target}</strong></p>
-                        <a href="/audit_report.html" target="_blank" class="text-cyan-400 underline font-semibold hover:text-cyan-300">
-                            [ View Executive Report ]
-                        </a>
-                    `;
+                if (data.checkout_url) {
+                    // Redirect directly to Chapa Checkout
+                    window.location.href = data.checkout_url;
                 } else {
-                    throw new Error(data.detail || data.error || "Failed to start scan");
+                    throw new Error("Could not initialize payment");
                 }
             } catch (err) {
-                resultDiv.classList.remove('hidden');
-                resultDiv.classList.add('bg-red-900/50', 'border', 'border-red-500', 'text-red-300');
-                resultDiv.innerHTML = `⚠️ <strong>Error:</strong> ${err.message}`;
-            } finally {
-                // Reset Button UI
+                alert("Error: " + err.message);
                 submitBtn.disabled = false;
                 btnText.textContent = "Start Security Scan";
                 btnSpinner.classList.add('hidden');
