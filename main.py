@@ -3,6 +3,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 
 app = FastAPI()
+@app.post("/scan")
+async def handle_scan(request: Request):
+    return {"status": "success", "message": "Scan initiated"}
 @app.get("/undefined")
 def fix_undefined():
     return FileResponse("index.html")
